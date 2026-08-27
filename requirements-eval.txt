@@ -1,0 +1,5 @@
+# Extra dep to run scripts/evaluate_rag.py (retrieval metrics + MLflow tracking)
+# on top of the base:  pip install -r requirements.txt && pip install -r requirements-eval.txt
+# The transformer comparison runs in the Colab notebook, which installs
+# sentence-transformers itself.
+mlflow==3.15.1

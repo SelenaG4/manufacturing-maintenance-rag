@@ -1,0 +1,30 @@
+{"question": "The spindle on my milling machine is running too hot — what should I check first?", "relevant": ["cnc_mill_maintenance::Spindle overheating", "fault_codes::SPN-05 — Spindle overtemperature"]}
+{"question": "How often do I need to clean and replace the coolant filter on the mill?", "relevant": ["cnc_mill_maintenance::Coolant system"]}
+{"question": "What kind of oil goes in the way lubrication system, and how do I know it's low?", "relevant": ["cnc_mill_maintenance::Way lubrication", "fault_codes::LUB-01 — Low lubrication"]}
+{"question": "The automatic tool changer arm keeps timing out — what causes that?", "relevant": ["fault_codes::ATC-04 — Tool changer arm timeout", "cnc_mill_maintenance::Tool changer faults"]}
+{"question": "One axis keeps throwing a following-error servo alarm even under light load.", "relevant": ["cnc_mill_maintenance::Axis position error / servo alarm"]}
+{"question": "Parts keep slipping in the lathe chuck during cutting.", "relevant": ["lathe_maintenance::Chuck and workholding"]}
+{"question": "There's a squealing noise near the tailstock and the finish is bad at that end of the part.", "relevant": ["lathe_maintenance::Tailstock and centers"]}
+{"question": "How can I tell whether the lathe spindle bearings are wearing out?", "relevant": ["lathe_maintenance::Spindle bearing wear", "vibration_and_bearing_wear::Bearing-wear signature"]}
+{"question": "The lathe turret indexes but won't clamp tight afterward.", "relevant": ["lathe_maintenance::Turret indexing faults", "fault_codes::TUR-02 — Turret index fault"]}
+{"question": "What are the common causes of a rough surface finish when turning?", "relevant": ["lathe_maintenance::Poor surface finish"]}
+{"question": "My hydraulic press won't build full tonnage anymore.", "relevant": ["hydraulic_press_maintenance::Loss of pressing force / pressure", "fault_codes::HYD-07 — Low hydraulic pressure"]}
+{"question": "How often should the hydraulic return-line filter be changed?", "relevant": ["hydraulic_press_maintenance::Hydraulic fluid and filtration"]}
+{"question": "The hydraulic oil on the press is getting too hot — why?", "relevant": ["hydraulic_press_maintenance::Overheating hydraulic oil"]}
+{"question": "The press ram is moving in a jerky, erratic way.", "relevant": ["hydraulic_press_maintenance::Slow or erratic ram motion"]}
+{"question": "When do the main cylinder seals on a press need replacing?", "relevant": ["hydraulic_press_maintenance::Seal replacement"]}
+{"question": "When should I dress the grinding wheel?", "relevant": ["surface_grinder_maintenance::Wheel dressing and balance"]}
+{"question": "I'm getting blue burn marks on parts coming off the surface grinder.", "relevant": ["surface_grinder_maintenance::Burning and poor finish"]}
+{"question": "The grinder is leaving chatter marks and a wavy finish on the workpiece.", "relevant": ["surface_grinder_maintenance::Spindle vibration"]}
+{"question": "The magnetic chuck on the grinder is holding parts only weakly.", "relevant": ["surface_grinder_maintenance::Magnetic chuck"]}
+{"question": "Why should we trend vibration over time instead of using a single fixed threshold?", "relevant": ["vibration_and_bearing_wear::Why trend vibration", "vibration_and_bearing_wear::Alarm thresholds vs. data-driven anomalies"]}
+{"question": "What does a failing bearing look like in the vibration data?", "relevant": ["vibration_and_bearing_wear::Bearing-wear signature"]}
+{"question": "What's the difference between a control-limit alarm and a rolling z-score anomaly?", "relevant": ["vibration_and_bearing_wear::Alarm thresholds vs. data-driven anomalies"]}
+{"question": "A machine's vibration trend is steadily climbing — what should I do about it?", "relevant": ["vibration_and_bearing_wear::Responding to a rising trend", "fault_codes::VIB-03 — Vibration alarm"]}
+{"question": "What is the correct lockout/tagout procedure before doing maintenance?", "relevant": ["safety_and_preventive_maintenance::Lockout / tagout (LOTO)"]}
+{"question": "Is it safe to work underneath a hydraulic ram that's held up by pressure?", "relevant": ["safety_and_preventive_maintenance::Stored hydraulic and pneumatic energy"]}
+{"question": "What checks should operators do at the start of each shift?", "relevant": ["safety_and_preventive_maintenance::Daily checks"]}
+{"question": "On what basis should we replace machine bearings — a calendar or something else?", "relevant": ["safety_and_preventive_maintenance::Preventive maintenance schedule", "vibration_and_bearing_wear::Responding to a rising trend"]}
+{"question": "When should we stop running a machine and escalate to a technician?", "relevant": ["safety_and_preventive_maintenance::When to escalate"]}
+{"question": "What does fault code HYD-07 mean and how do I clear it?", "relevant": ["fault_codes::HYD-07 — Low hydraulic pressure", "hydraulic_press_maintenance::Loss of pressing force / pressure"]}
+{"question": "What coolant concentration should the flood coolant on the mill be kept at?", "relevant": ["cnc_mill_maintenance::Coolant system"]}

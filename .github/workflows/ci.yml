@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install system libs for FAISS
+        run: sudo apt-get update && sudo apt-get install -y libgomp1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run test suite
+        # Chunking, FAISS retrieval quality, the grounded-answer + guardrail
+        # behavior, the retrieval-metric functions, and the API end to end.
+        run: pytest tests/ -v

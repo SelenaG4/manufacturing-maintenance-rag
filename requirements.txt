@@ -1,0 +1,12 @@
+# Light serving runtime: the FastAPI RAG service + the FAISS vector index + the
+# classical LSA embedder. No torch, no sentence-transformers -- the live service
+# runs entirely on the offline LSA embedder, so it stays small and starts fast.
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+faiss-cpu==1.15.0
+scikit-learn==1.8.0
+numpy==2.4.4
+joblib==1.5.3
+httpx==0.28.1
+pytest==8.3.3
