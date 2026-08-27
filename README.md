@@ -133,8 +133,8 @@ Light image — the offline LSA service, ~150 MB resident, no torch.
 
 ### Live demo
 
-Deployed on Render's free tier: **[link added once deployed]**. The free tier spins down after 15 min
-idle, so the first request after a lull takes ~30–50s to wake.
+Deployed on Render's free tier: **https://manufacturing-maintenance-rag.onrender.com/**. The free tier
+spins down after 15 min idle, so the first request after a lull takes ~30–50s to wake.
 
 ## What I'd do next
 
