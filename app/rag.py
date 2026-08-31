@@ -18,6 +18,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 
+from app import telemetry
 from app.config import TOP_K
 from app.corpus import Chunk
 from app.index import RagIndex
@@ -97,15 +98,42 @@ def _llm_answer(query: str, hits: list[tuple[Chunk, float]]) -> tuple[str, str] 
 
 
 def answer_question(index: RagIndex, query: str, k: int = TOP_K) -> RagAnswer:
-    hits = index.search(query, k)
-    if not hits or hits[0][1] < MIN_SCORE:
+    # Retrieval and generation are traced separately on purpose: they fail and
+    # slow down for entirely different reasons, and an end-to-end request
+    # duration cannot tell you which one moved. See app/telemetry.py.
+    with telemetry.span("rag.retrieve", **{"rag.k": k}) as retrieve_span:
+        hits = index.search(query, k)
+        top_score = hits[0][1] if hits else 0.0
+        telemetry.set_attributes(
+            retrieve_span,
+            **{"rag.hit_count": len(hits), "rag.top_score": float(top_score)},
+        )
+
+    if not hits or top_score < MIN_SCORE:
+        # The guardrail firing is a product event, not an error -- it is the
+        # service correctly refusing to answer off-corpus. Recorded so the rate
+        # can be watched: a sudden climb means users are asking about machines
+        # the knowledge base does not cover yet.
+        with telemetry.span(
+            "rag.guardrail_refused",
+            **{"rag.top_score": float(top_score), "rag.min_score": MIN_SCORE},
+        ):
+            pass
         return RagAnswer(
             answer=("I couldn't find anything relevant in the maintenance guides for that. "
                     "Try rephrasing, or ask about a specific machine, symptom, or fault code."),
             sources=_sources(hits[:2]), mode="no_answer", grounded=False)
 
-    llm = _llm_answer(query, hits)
+    with telemetry.span("rag.generate") as generate_span:
+        llm = _llm_answer(query, hits)
+        mode = llm[1] if llm is not None else "offline_extractive"
+        # Which tier of the fallback actually served the answer. If this reads
+        # "offline_extractive" in production when a key is configured, the LLM
+        # path is silently failing -- exactly the kind of degradation that is
+        # invisible without tracing, because the service still returns 200.
+        telemetry.set_attributes(generate_span, **{"rag.mode": mode})
+
     if llm is not None:
-        return RagAnswer(answer=llm[0], sources=_sources(hits), mode=llm[1], grounded=True)
+        return RagAnswer(answer=llm[0], sources=_sources(hits), mode=mode, grounded=True)
     return RagAnswer(answer=_offline_answer(query, hits), sources=_sources(hits),
                      mode="offline_extractive", grounded=True)

@@ -30,3 +30,9 @@ jobs:
         # Chunking, FAISS retrieval quality, the grounded-answer + guardrail
         # behavior, the retrieval-metric functions, and the API end to end.
         run: pytest tests/ -v
+
+      - name: Gate on retrieval quality
+        # Runs on pull requests too, so a change that degrades retrieval is
+        # visible in review rather than discovered after merge. Same script the
+        # CD pipeline runs, so the check cannot drift between the two.
+        run: python scripts/gate_retrieval.py

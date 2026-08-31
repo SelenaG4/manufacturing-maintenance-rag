@@ -1,0 +1,52 @@
+name: CD
+
+# Deployment policy is not defined here. It lives once, in the platform repo,
+# and this file just calls it with this service's parameters. When the rollback
+# logic or the smoke test changes, it changes for every service at once.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  # The retrieval gate runs BEFORE the deploy job and blocks it. Shipping an
+  # index that still returns 200 on every request but retrieves worse passages
+  # is exactly the failure this ordering prevents.
+  quality-gate:
+    name: Retrieval quality gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system libs for FAISS
+        run: sudo apt-get update && sudo apt-get install -y libgomp1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Gate on retrieval quality
+        run: python scripts/gate_retrieval.py
+
+  deploy:
+    name: Deploy to Azure
+    needs: quality-gate
+    uses: SelenaG4/smart-factory-platform/.github/workflows/deploy-service.yml@main
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      service-name: rag
+      app-name: smartfactory-rag
+      resource-group: rg-smart-factory
+      with-telemetry: true
+    secrets: inherit
