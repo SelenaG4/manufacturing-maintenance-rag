@@ -5,6 +5,7 @@ default; synthesized by an LLM if API keys are configured)."""
 from __future__ import annotations
 
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -12,31 +13,41 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from app import rag
+from app import rag, telemetry
 from app.config import INDEX_DIR, TOP_K
 from app.index import RagIndex
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
-app = FastAPI(
-    title="Manufacturing Maintenance Assistant",
-    description="RAG over machine-maintenance guides: semantic retrieval (FAISS) + grounded, cited answers.",
-    version="1.0.0",
-)
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
 _index: RagIndex | None = None
 _load_error: str | None = None
 
 
-@app.on_event("startup")
-def _startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Load the vector index and configure tracing before serving traffic.
+
+    Replaces the deprecated @app.on_event("startup") hook. Telemetry is set up
+    after the index so that index-load failures are still reported by /health
+    even if the exporter cannot be reached.
+    """
     global _index, _load_error
     try:
         _index = RagIndex.load(INDEX_DIR)
     except Exception as exc:  # noqa: BLE001 -- degrade gracefully if the index isn't built
         _index = None
         _load_error = (f"No index at {INDEX_DIR} ({exc}). Run: python scripts/build_index.py")
+    telemetry.setup_telemetry(app)
+    yield
+
+
+app = FastAPI(
+    lifespan=lifespan,
+    title="Manufacturing Maintenance Assistant",
+    description="RAG over machine-maintenance guides: semantic retrieval (FAISS) + grounded, cited answers.",
+    version="1.0.0",
+)
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 def _gen_mode() -> str:
@@ -60,6 +71,7 @@ def health() -> dict:
         "index_status": None if _index is not None else _load_error,
         "chunks": len(_index.chunks) if _index else 0,
         "generation_mode": _gen_mode(),
+        "telemetry_configured": telemetry.is_configured(),
     }
 
 
